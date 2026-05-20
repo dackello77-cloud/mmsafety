@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shift Messages</title>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 16px;
+}
+
+.header {
+  max-width: 1250px;
+  margin: 0 auto 18px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.add-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  border: none;
+  background: #22c55e;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+}
+
+.container {
+  max-width: 1250px;
+  margin: 0 auto;
+}
+
+.top-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 9px 13px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.btn.gray {
+  background: #475569;
+}
+
+.btn.green {
+  background: #16a34a;
+}
+
+.btn.red {
+  background: #dc2626;
+}
+
+.btn.orange {
+  background: #ea580c;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.card {
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+}
+
+.card.open {
+  border-left: 5px solid #22c55e;
+}
+
+.card.closed {
+  border-left: 5px solid #64748b;
+}
+
+.status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.open-status {
+  background: #15803d;
+}
+
+.closed-status {
+  background: #475569;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.date {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.message {
+
+  white-space: pre-wrap;
+  background: #020617;
+  padding: 2px 12px;
+  border-radius: 10px;
+  margin: 3px 0;
+  line-height: 25px;
+  font-size: 14px;
+
+}
+
+.leaders-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.manager-row {
+  margin-top: 6px;
+  max-width: 33%;
+}
+
+.sign-pill {
+  background: #020617;
+  border-radius: 10px;
+  padding: 7px 9px;
+  font-size: 12px;
+  border: 1px solid #334155;
+}
+
+.sign-pill.done {
+  border-color: #22c55e;
+}
+
+.sign-pill b {
+  display: block;
+  color: #93c5fd;
+  margin-bottom: 2px;
+}
+
+.chat-box {
+  margin-top: 10px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.chat-title {
+  font-weight: bold;
+  color: #93c5fd;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.chat-item {
+  border-top: 1px solid #334155;
+  padding-top: 8px;
+  margin-top: 8px;
+}
+
+.chat-item:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.chat-meta {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.chat-name {
+  color: #f8fafc;
+  font-weight: bold;
+}
+
+.chat-text {
+  white-space: pre-wrap;
+  color: #e5e7eb;
+  line-height: 10px;
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.notice {
+  background: #020617;
+  padding: 12px;
+  border-radius: 10px;
+  color: #cbd5e1;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+  padding: 15px;
+}
+
+.modal-box {
+  background: #1e293b;
+  width: 100%;
+  max-width: 520px;
+  border-radius: 16px;
+  padding: 18px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-box h2 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-size: 22px;
+}
+
+input,
+textarea {
+  width: 100%;
+  margin-top: 6px;
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #020617;
+  color: white;
+  font-size: 14px;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.pin-wrap {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 10px 0 14px;
+}
+
+.pin-box {
+  width: 50px;
+  height: 54px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 12px;
+  border: 2px solid #334155;
+  background: #020617;
+  color: white;
+}
+
+.pin-box:focus {
+  outline: none;
+  border-color: #38bdf8;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.detail-box {
+  background: #020617;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.detail-box b {
+  color: #93c5fd;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 850px) {
+
+  .leaders-row {
+    grid-template-columns: 1fr;
+  }
+
+  .manager-row {
+    max-width: 100%;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .btn {
+    font-size: 12px;
+    padding: 8px 11px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>Shift Messages</h1>
+  <button class="add-btn" onclick="openAddModal()">+</button>
+</div>
+
+<div class="container">
+  <div class="top-actions">
+    <button class="btn green" onclick="loadMessages()">Refresh</button>
+  </div>
+  <div id="messages" class="notice">Loading...</div>
+</div>
+
+<div class="modal" id="addModal">
+  <div class="modal-box">
+    <h2>New Message</h2>
+
+    <label>Title</label>
+    <input id="newTitle" placeholder="Enter title">
+
+    <label>Message</label>
+    <textarea id="newMessage" placeholder="Enter message"></textarea>
+
+    <div class="modal-actions">
+      <button class="btn gray" onclick="closeAddModal()">Cancel</button>
+      <button class="btn" id="saveBtn" onclick="saveMessage()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="signModal">
+  <div class="modal-box">
+    <h2>Sign / Close Message</h2>
+
+    <input type="hidden" id="signRowIndex">
+
+    <label>PIN</label>
+    <div class="pin-wrap">
+      <input class="pin-box sign-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box sign-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box sign-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box sign-pin" maxlength="1" inputmode="numeric">
+    </div>
+
+    <label>Comment</label>
+    <textarea id="signCommentInput" placeholder="Optional comment"></textarea>
+
+    <div class="modal-actions">
+      <button class="btn gray" onclick="closeSignModal()">Cancel</button>
+      <button class="btn" id="signBtn" onclick="submitSignature()">Sign</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="commentPinModal">
+  <div class="modal-box">
+    <h2>Add Comment</h2>
+
+    <input type="hidden" id="commentRowIndex">
+
+    <label>PIN</label>
+    <div class="pin-wrap">
+      <input class="pin-box comment-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box comment-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box comment-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box comment-pin" maxlength="1" inputmode="numeric">
+    </div>
+
+    <p style="color:#94a3b8;font-size:13px;">
+      PIN 0000 je za osobu koja nije shift leader ili manager.
+    </p>
+
+    <div class="modal-actions">
+      <button class="btn gray" onclick="closeCommentPinModal()">Cancel</button>
+      265<button class="btn" onclick="continueComment()">Next</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="commentTextModal">
+  <div class="modal-box">
+    <h2 id="commentUserTitle">Comment</h2>
+
+    <div id="externalNameBox" class="hidden">
+      <label>Your name</label>
+      <input id="externalNameInput" placeholder="Enter your name">
+    </div>
+
+    <label>Comment</label>
+    <textarea id="chatCommentInput" placeholder="Enter comment"></textarea>
+
+    <div class="modal-actions">
+      <button class="btn gray" onclick="closeCommentTextModal()">Cancel</button>
+      <button class="btn" id="commentSaveBtn" onclick="submitComment()">Save Comment</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="deleteModal">
+  <div class="modal-box">
+    <h2>Delete Message</h2>
+    <p>Only manager can delete this message.</p>
+
+    <input type="hidden" id="deleteRowIndex">
+
+    <label>Manager PIN</label>
+    <div class="pin-wrap">
+      <input class="pin-box delete-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box delete-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box delete-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box delete-pin" maxlength="1" inputmode="numeric">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn gray" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn red" id="deleteBtn" onclick="submitDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="reopenModal">
+  <div class="modal-box">
+    <h2>Reopen Message</h2>
+    <p>Only manager can reopen closed message.</p>
+
+    <input type="hidden" id="reopenRowIndex">
+
+    <label>Manager PIN</label>
+    <div class="pin-wrap">
+      <input class="pin-box reopen-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box reopen-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box reopen-pin" maxlength="1" inputmode="numeric">
+      <input class="pin-box reopen-pin" maxlength="1" inputmode="numeric">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn gray" onclick="closeReopenModal()">Cancel</button>
+      <button class="btn orange" id="reopenBtn" onclick="submitReopen()">Reopen</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="viewModal">
+  <div class="modal-box">
+    <h2 id="viewTitle"></h2>
+    <div class="date" id="viewDate"></div>
+    <div class="message" id="viewMessage"></div>
+
+    <h3>Signatures</h3>
+    <div id="viewDetails"></div>
+
+    <h3>Comments</h3>
+    <div id="viewComments"></div>
+
+    <div class="modal-actions">
+      <button class="btn gray" onclick="closeViewModal()">Close</button>
+    </div>
+  </div>
+</div>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwme3W4h7wNpBgn0I0PNyJUBRITv5UaLVCNdSCHW_qqYaWB8E-_XLZSKwHV3-DhQnG-/exec";
+
+let allMessages = [];
+let pendingCommentPin = "";
+
+async function loadMessages() {
+  const box = document.getElementById("messages");
+  box.className = "notice";
+  box.innerHTML = "Loading...";
+
+  try {
+    const res = await fetch(API_URL + "?action=messages");
+    const data = await res.json();
+    allMessages = data;
+    renderMessages(data);
+  } catch (err) {
+    box.innerHTML = "Error loading messages.";
+    console.error(err);
+  }
+}
+
+function renderMessages(data) {
+  const box = document.getElementById("messages");
+
+  if (!data || data.length === 0) {
+    box.innerHTML = "No messages.";
+    return;
+  }
+
+  box.className = "";
+
+  box.innerHTML = data.map((msg, index) => {
+    const status = msg.STATUS || "OPEN";
+    const isClosed = status === "CLOSED";
+    const hasComments = msg.CHAT_COMMENTS && msg.CHAT_COMMENTS.length > 0;
+
+    return `
+      <div class="card ${isClosed ? "closed" : "open"}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;">
+          <div>
+            <span class="status ${isClosed ? "closed-status" : "open-status"}">${escapeHtml(status)}</span>
+            <div class="title">${escapeHtml(msg.TITLE || "")}</div>
+            <div class="date">${formatDate(msg.DATE)}</div>
+          </div>
+
+          ${
+            isClosed && hasComments
+            ? `<button class="btn red" onclick="toggleClosedComments(${index})">Comments (${msg.CHAT_COMMENTS.length})</button>`
+            : ""
+          }
+        </div>
+
+        <div class="message">${escapeHtml(msg.MESSAGE || "")}</div>
+
+        ${
+          !isClosed
+          ? `${renderSignatureRow(msg)}${renderChat(msg.CHAT_COMMENTS || [])}`
+          : `<div id="closed-comments-${index}" style="display:none;margin-top:12px;">${renderChat(msg.CHAT_COMMENTS || [])}</div>`
+        }
+
+        <div class="actions">
+          <button class="btn gray" onclick="openViewModal(${index})">View details</button>
+
+          ${
+            !isClosed
+            ? `
+              <button class="btn green" onclick="openCommentPinModal('${msg.rowIndex}')">Add Comment</button>
+              <button class="btn" onclick="openSignModal('${msg.rowIndex}')">Sign / Close</button>
+            `
+            : `
+              <button class="btn orange" onclick="openReopenModal('${msg.rowIndex}')">Reopen</button>
+            `
+          }
+
+          <button class="btn red" onclick="openDeleteModal('${msg.rowIndex}')">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function toggleClosedComments(index) {
+  const box = document.getElementById(`closed-comments-${index}`);
+  if (!box) return;
+  box.style.display = box.style.display === "none" ? "block" : "none";
+}
+
+function renderSignatureRow(msg) {
+  return `
+    <div class="leaders-row">
+      ${signPill("Leader 1", msg.LEADER1)}
+      ${signPill("Leader 2", msg.LEADER2)}
+      ${signPill("Leader 3", msg.LEADER3)}
+    </div>
+    <div class="manager-row">
+      ${signPill("Manager", msg.MANAGER)}
+    </div>
+  `;
+}
+
+function signPill(label, value) {
+  return `
+    <div class="sign-pill ${value ? "done" : ""}">
+      <b>${label}</b>
+      ${escapeHtml(value || "Not signed")}
+    </div>
+  `;
+}
+
+function renderChat(comments) {
+  if (!comments || comments.length === 0) {
+    return `
+      <div class="chat-box">
+        <div class="chat-title">Comments</div>
+        <div style="color:#94a3b8;font-size:13px;">No comments yet.</div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="chat-box">
+      <div class="chat-title">Comments</div>
+      ${comments.map(c => `
+        <div class="chat-item">
+          <div class="chat-meta">
+            <span class="chat-name">${escapeHtml(c.name || "")}</span>
+            ${c.role ? " / " + escapeHtml(c.role) : ""}
+            · ${formatDate(c.time)}
+          </div>
+          <div class="chat-text">${escapeHtml(c.text || "")}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function openAddModal() {
+  document.getElementById("addModal").style.display = "flex";
+}
+
+function closeAddModal() {
+  document.getElementById("addModal").style.display = "none";
+  document.getElementById("newTitle").value = "";
+  document.getElementById("newMessage").value = "";
+}
+
+async function saveMessage() {
+  const title = document.getElementById("newTitle").value.trim();
+  const message = document.getElementById("newMessage").value.trim();
+  const btn = document.getElementById("saveBtn");
+
+  if (!title || !message) {
+    alert("Please enter title and message.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Saving...";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "addMessage", title, message })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      closeAddModal();
+      loadMessages();
+    } else {
+      alert(data.message || "Error saving message.");
+    }
+  } catch (err) {
+    alert("Error saving message.");
+    console.error(err);
+  }
+
+  btn.disabled = false;
+  btn.innerText = "Save";
+}
+
+function openSignModal(rowIndex) {
+  document.getElementById("signRowIndex").value = rowIndex;
+  document.getElementById("signCommentInput").value = "";
+  clearPin(".sign-pin");
+  document.getElementById("signModal").style.display = "flex";
+  setTimeout(() => document.querySelector(".sign-pin").focus(), 100);
+}
+
+function closeSignModal() {
+  document.getElementById("signModal").style.display = "none";
+}
+
+async function submitSignature() {
+  const rowIndex = document.getElementById("signRowIndex").value;
+  const pin = getPin(".sign-pin");
+  const comment = document.getElementById("signCommentInput").value.trim();
+  const btn = document.getElementById("signBtn");
+
+  if (pin.length !== 4) {
+    alert("PIN must have 4 digits.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Signing...";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "signMessage", rowIndex, pin, comment })
+    });
+
+    const data = await res.json();
+    alert(data.message || "Done");
+
+    if (data.success) {
+      closeSignModal();
+      loadMessages();
+    }
+  } catch (err) {
+    alert("Error signing message.");
+    console.error(err);
+  }
+
+  btn.disabled = false;
+  btn.innerText = "Sign";
+}
+
+function openCommentPinModal(rowIndex) {
+  document.getElementById("commentRowIndex").value = rowIndex;
+  clearPin(".comment-pin");
+  pendingCommentPin = "";
+  document.getElementById("commentPinModal").style.display = "flex";
+  setTimeout(() => document.querySelector(".comment-pin").focus(), 100);
+}
+
+function closeCommentPinModal() {
+  document.getElementById("commentPinModal").style.display = "none";
+}
+
+function continueComment() {
+  const pin = getPin(".comment-pin");
+
+  if (pin.length !== 4) {
+    alert("PIN must have 4 digits.");
+    return;
+  }
+
+  pendingCommentPin = pin;
+  document.getElementById("chatCommentInput").value = "";
+  document.getElementById("externalNameInput").value = "";
+
+  if (pin === "0000") {
+    document.getElementById("externalNameBox").classList.remove("hidden");
+    document.getElementById("commentUserTitle").innerText = "External Comment";
+  } else {
+    document.getElementById("externalNameBox").classList.add("hidden");
+    document.getElementById("commentUserTitle").innerText = "Comment";
+  }
+
+  closeCommentPinModal();
+  document.getElementById("commentTextModal").style.display = "flex";
+}
+
+function closeCommentTextModal() {
+  document.getElementById("commentTextModal").style.display = "none";
+}
+
+async function submitComment() {
+  const rowIndex = document.getElementById("commentRowIndex").value;
+  const externalName = document.getElementById("externalNameInput").value.trim();
+  const comment = document.getElementById("chatCommentInput").value.trim();
+  const btn = document.getElementById("commentSaveBtn");
+
+  if (pendingCommentPin === "0000" && !externalName) {
+    alert("Please enter your name.");
+    return;
+  }
+
+  if (!comment) {
+    alert("Please enter comment.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Saving...";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "addComment",
+        rowIndex,
+        pin: pendingCommentPin,
+        externalName,
+        comment
+      })
+    });
+
+    const data = await res.json();
+    alert(data.message || "Done");
+
+    if (data.success) {
+      closeCommentTextModal();
+      loadMessages();
+    }
+  } catch (err) {
+    alert("Error saving comment.");
+    console.error(err);
+  }
+
+  btn.disabled = false;
+  btn.innerText = "Save Comment";
+}
+
+function openDeleteModal(rowIndex) {
+  document.getElementById("deleteRowIndex").value = rowIndex;
+  clearPin(".delete-pin");
+  document.getElementById("deleteModal").style.display = "flex";
+  setTimeout(() => document.querySelector(".delete-pin").focus(), 100);
+}
+
+function closeDeleteModal() {
+  document.getElementById("deleteModal").style.display = "none";
+}
+
+async function submitDelete() {
+  const rowIndex = document.getElementById("deleteRowIndex").value;
+  const pin = getPin(".delete-pin");
+  const btn = document.getElementById("deleteBtn");
+
+  if (pin.length !== 4) {
+    alert("Manager PIN must have 4 digits.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Deleting...";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "deleteMessage", rowIndex, pin })
+    });
+
+    const data = await res.json();
+    alert(data.message || "Done");
+
+    if (data.success) {
+      closeDeleteModal();
+      loadMessages();
+    }
+  } catch (err) {
+    alert("Error deleting message.");
+    console.error(err);
+  }
+
+  btn.disabled = false;
+  btn.innerText = "Delete";
+}
+
+function openReopenModal(rowIndex) {
+  document.getElementById("reopenRowIndex").value = rowIndex;
+  clearPin(".reopen-pin");
+  document.getElementById("reopenModal").style.display = "flex";
+  setTimeout(() => document.querySelector(".reopen-pin").focus(), 100);
+}
+
+function closeReopenModal() {
+  document.getElementById("reopenModal").style.display = "none";
+}
+
+async function submitReopen() {
+  const rowIndex = document.getElementById("reopenRowIndex").value;
+  const pin = getPin(".reopen-pin");
+  const btn = document.getElementById("reopenBtn");
+
+  if (pin.length !== 4) {
+    alert("Manager PIN must have 4 digits.");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Opening...";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "reopenMessage", rowIndex, pin })
+    });
+
+    const data = await res.json();
+    alert(data.message || "Done");
+
+    if (data.success) {
+      closeReopenModal();
+      loadMessages();
+    }
+  } catch (err) {
+    alert("Error reopening message.");
+    console.error(err);
+  }
+
+  btn.disabled = false;
+  btn.innerText = "Reopen";
+}
+
+function openViewModal(index) {
+  const msg = allMessages[index];
+
+  document.getElementById("viewTitle").innerText = msg.TITLE || "";
+  document.getElementById("viewDate").innerText = formatDate(msg.DATE);
+  document.getElementById("viewMessage").innerText = msg.MESSAGE || "";
+
+  document.getElementById("viewDetails").innerHTML = `
+    ${detailBox("Leader 1", msg.LEADER1)}
+    ${detailBox("Leader 2", msg.LEADER2)}
+    ${detailBox("Leader 3", msg.LEADER3)}
+    ${detailBox("Manager", msg.MANAGER)}
+  `;
+
+  document.getElementById("viewComments").innerHTML = renderChat(msg.CHAT_COMMENTS || []);
+  document.getElementById("viewModal").style.display = "flex";
+}
+
+function closeViewModal() {
+  document.getElementById("viewModal").style.display = "none";
+}
+
+function detailBox(label, name) {
+  return `
+    <div class="detail-box">
+      <b>${label}:</b>
+      ${escapeHtml(name || "Not signed")}
+    </div>
+  `;
+}
+
+function setupPinInputs() {
+  document.querySelectorAll(".pin-box").forEach((input, index, list) => {
+    input.addEventListener("input", () => {
+      input.value = input.value.replace(/\D/g, "");
+
+      if (input.value && index < list.length - 1) {
+        list[index + 1].focus();
+      }
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Backspace" && !input.value && index > 0) {
+        list[index - 1].focus();
+      }
+    });
+  });
+}
+
+function getPin(selector) {
+  return Array.from(document.querySelectorAll(selector)).map(i => i.value).join("");
+}
+
+function clearPin(selector) {
+  document.querySelectorAll(selector).forEach(i => i.value = "");
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatDate(dateValue) {
+  if (!dateValue) return "";
+  const d = new Date(dateValue);
+  if (isNaN(d.getTime())) return dateValue;
+  return d.toLocaleString();
+}
+
+setupPinInputs();
+loadMessages();
+
+setInterval(loadMessages, 180000);
+</script>
+
+
+</body>
+</html>
