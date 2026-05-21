@@ -6,7 +6,6 @@
 <title>Shift Messages</title>
 
 <style>
-
 * {
   box-sizing: border-box;
 }
@@ -65,21 +64,10 @@ body {
   font-size: 13px;
 }
 
-.btn.gray {
-  background: #475569;
-}
-
-.btn.green {
-  background: #16a34a;
-}
-
-.btn.red {
-  background: #dc2626;
-}
-
-.btn.orange {
-  background: #ea580c;
-}
+.btn.gray { background: #475569; }
+.btn.green { background: #16a34a; }
+.btn.red { background: #dc2626; }
+.btn.orange { background: #ea580c; }
 
 .btn:disabled {
   opacity: 0.6;
@@ -102,6 +90,14 @@ body {
   border-left: 5px solid #64748b;
 }
 
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .status {
   display: inline-block;
   padding: 4px 10px;
@@ -111,13 +107,8 @@ body {
   font-weight: bold;
 }
 
-.open-status {
-  background: #15803d;
-}
-
-.closed-status {
-  background: #475569;
-}
+.open-status { background: #15803d; }
+.closed-status { background: #475569; }
 
 .title {
   font-size: 18px;
@@ -131,15 +122,18 @@ body {
 }
 
 .message {
-
   white-space: pre-wrap;
   background: #020617;
-  padding: 2px 12px;
+  padding: 0 2px;
   border-radius: 10px;
-  margin: 3px 0;
-  line-height: 25px;
+  margin: 3px 10px;
+  line-height: 30px;
   font-size: 14px;
+}
 
+.toggle-area {
+  display: none;
+  margin-top: 10px;
 }
 
 .leaders-row {
@@ -213,7 +207,7 @@ body {
 .chat-text {
   white-space: pre-wrap;
   color: #e5e7eb;
-  line-height: 10px;
+  line-height: 1.25;
   font-size: 13px;
 }
 
@@ -325,7 +319,6 @@ textarea {
 }
 
 @media (max-width: 850px) {
-
   .leaders-row {
     grid-template-columns: 1fr;
   }
@@ -347,7 +340,6 @@ textarea {
     padding: 8px 11px;
   }
 }
-
 </style>
 </head>
 
@@ -426,7 +418,7 @@ textarea {
 
     <div class="modal-actions">
       <button class="btn gray" onclick="closeCommentPinModal()">Cancel</button>
-      265<button class="btn" onclick="continueComment()">Next</button>
+      <button class="btn" onclick="continueComment()">Next</button>
     </div>
   </div>
 </div>
@@ -511,6 +503,7 @@ textarea {
     </div>
   </div>
 </div>
+
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwme3W4h7wNpBgn0I0PNyJUBRITv5UaLVCNdSCHW_qqYaWB8E-_XLZSKwHV3-DhQnG-/exec";
 
@@ -547,56 +540,93 @@ function renderMessages(data) {
     const status = msg.STATUS || "OPEN";
     const isClosed = status === "CLOSED";
     const hasComments = msg.CHAT_COMMENTS && msg.CHAT_COMMENTS.length > 0;
+    const leaderCount = countLeaders(msg);
 
     return `
       <div class="card ${isClosed ? "closed" : "open"}">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;">
+
+        <div class="card-top">
           <div>
             <span class="status ${isClosed ? "closed-status" : "open-status"}">${escapeHtml(status)}</span>
             <div class="title">${escapeHtml(msg.TITLE || "")}</div>
             <div class="date">${formatDate(msg.DATE)}</div>
           </div>
 
-          ${
-            isClosed && hasComments
-            ? `<button class="btn red" onclick="toggleClosedComments(${index})">Comments (${msg.CHAT_COMMENTS.length})</button>`
-            : ""
-          }
+          <div class="actions" style="margin-top:0;">
+            <button class="btn gray" onclick="toggleCard(${index})">
+              Open ▼
+            </button>
+
+            ${
+              hasComments
+              ? `<button class="btn red" onclick="toggleComments(${index})">Comments (${msg.CHAT_COMMENTS.length})</button>`
+              : `<button class="btn gray" onclick="toggleComments(${index})">Comments (0)</button>`
+            }
+
+            <button class="btn orange" onclick="toggleSignatures(${index})">
+              Sign ${leaderCount}/3
+            </button>
+          </div>
         </div>
 
         <div class="message">${escapeHtml(msg.MESSAGE || "")}</div>
 
-        ${
-          !isClosed
-          ? `${renderSignatureRow(msg)}${renderChat(msg.CHAT_COMMENTS || [])}`
-          : `<div id="closed-comments-${index}" style="display:none;margin-top:12px;">${renderChat(msg.CHAT_COMMENTS || [])}</div>`
-        }
-
-        <div class="actions">
-          <button class="btn gray" onclick="openViewModal(${index})">View details</button>
-
-          ${
-            !isClosed
-            ? `
-              <button class="btn green" onclick="openCommentPinModal('${msg.rowIndex}')">Add Comment</button>
-              <button class="btn" onclick="openSignModal('${msg.rowIndex}')">Sign / Close</button>
-            `
-            : `
-              <button class="btn orange" onclick="openReopenModal('${msg.rowIndex}')">Reopen</button>
-            `
-          }
-
-          <button class="btn red" onclick="openDeleteModal('${msg.rowIndex}')">Delete</button>
+        <div id="comments-${index}" class="toggle-area">
+          ${renderChat(msg.CHAT_COMMENTS || [])}
         </div>
+
+        <div id="signatures-${index}" class="toggle-area">
+          ${renderSignatureRow(msg)}
+        </div>
+
+        <div id="full-card-${index}" class="toggle-area">
+          <div class="actions">
+            <button class="btn gray" onclick="openViewModal(${index})">View details</button>
+
+            ${
+              !isClosed
+              ? `
+                <button class="btn green" onclick="openCommentPinModal('${msg.rowIndex}')">Add Comment</button>
+                <button class="btn" onclick="openSignModal('${msg.rowIndex}')">Sign / Close</button>
+              `
+              : `
+                <button class="btn orange" onclick="openReopenModal('${msg.rowIndex}')">Reopen</button>
+              `
+            }
+
+            <button class="btn red" onclick="openDeleteModal('${msg.rowIndex}')">Delete</button>
+          </div>
+        </div>
+
       </div>
     `;
   }).join("");
 }
 
-function toggleClosedComments(index) {
-  const box = document.getElementById(`closed-comments-${index}`);
+function countLeaders(msg) {
+  let count = 0;
+  if (msg.LEADER1) count++;
+  if (msg.LEADER2) count++;
+  if (msg.LEADER3) count++;
+  return count;
+}
+
+function toggleCard(index) {
+  toggleBox(`full-card-${index}`);
+}
+
+function toggleComments(index) {
+  toggleBox(`comments-${index}`);
+}
+
+function toggleSignatures(index) {
+  toggleBox(`signatures-${index}`);
+}
+
+function toggleBox(id) {
+  const box = document.getElementById(id);
   if (!box) return;
-  box.style.display = box.style.display === "none" ? "block" : "none";
+  box.style.display = box.style.display === "block" ? "none" : "block";
 }
 
 function renderSignatureRow(msg) {
@@ -606,6 +636,7 @@ function renderSignatureRow(msg) {
       ${signPill("Leader 2", msg.LEADER2)}
       ${signPill("Leader 3", msg.LEADER3)}
     </div>
+
     <div class="manager-row">
       ${signPill("Manager", msg.MANAGER)}
     </div>
@@ -999,7 +1030,6 @@ loadMessages();
 
 setInterval(loadMessages, 180000);
 </script>
-
 
 </body>
 </html>
